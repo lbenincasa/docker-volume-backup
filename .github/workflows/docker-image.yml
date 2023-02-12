@@ -1,0 +1,72 @@
+#docker-image.yml
+name: Docker Image CI
+
+on:
+  workflow_dispatch:
+    inputs:
+      logLevel:
+        description: 'Log level'     
+        required: true
+        default: 'warning' 
+        type: choice
+        options:
+        - info
+        - warning
+        - debug 
+      tags:
+        description: 'Tag to use'
+        default: "latest"
+        required: true
+        type: string
+      push:
+        description: 'Push on Docker Hub'
+        required: false
+        default: false
+        type: boolean
+#      environment:
+#        description: 'Environment to run tests against'
+#        type: environment
+#        required: true 
+
+#  push:
+#    branches: [ "main" ]
+#  pull_request:
+#    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - 
+        name: Checkout
+        uses: actions/checkout@v3
+#      run: |
+#        docker build . --file Dockerfile.ubuntu --tag ansible:ubuntu-$(date +%s)
+#        echo ${{ inputs.logLevel }}
+#        echo ${{ inputs.tags }}
+#        echo ${{ inputs.environment }}
+
+      - 
+        name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+
+      - 
+        name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - 
+        name: Login to DockerHub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - 
+        name: Build and Push Set up Docker Buildx
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          file: ./Dockerfile
+          platforms: linux/amd64,linux/arm64,linux/arm/v7
+          push: ${{ inputs.push }}
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/mnt2:${{ inputs.tags }}
