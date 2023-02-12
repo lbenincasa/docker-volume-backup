@@ -13,7 +13,14 @@ FROM alpine:3.17
 
 WORKDIR /root
 
-RUN apk add --no-cache ca-certificates
+RUN apk add --no-cache ca-certificates \
+  nano \
+  mc \
+  lsblk \
+  rsync \
+  restic \
+  rclone \
+  bridge-utils 
 
 COPY --from=builder /app/cmd/backup/backup /usr/bin/backup
 
