@@ -394,6 +394,12 @@ func (s *script) stopContainers() (func() error, error) {
 // createArchive creates a tar archive of the configured backup location and
 // saves it to disk.
 func (s *script) createArchive() error {
+
+	if !s.c.BackupEnabled { // backup not enabled
+		s.logger.Infof("createArchive: skipping, backup disabled by config.")
+		return nil
+	}
+
 	backupSources := s.c.BackupSources
 
 	if s.c.BackupFromSnapshot {
@@ -462,6 +468,11 @@ func (s *script) createArchive() error {
 // In case no passphrase is given it returns early, leaving the backup file
 // untouched.
 func (s *script) encryptArchive() error {
+	if !s.c.BackupEnabled {
+		s.logger.Infof("encryptArchive: skipping, backup disabled by config.")
+		return nil
+	}
+
 	if s.c.GpgPassphrase == "" {
 		return nil
 	}
@@ -508,6 +519,11 @@ func (s *script) encryptArchive() error {
 // copyArchive makes sure the backup file is copied to both local and remote locations
 // as per the given configuration.
 func (s *script) copyArchive() error {
+	if !s.c.BackupEnabled {
+		s.logger.Infof("copyArchive: skipping, backup disabled by config.")
+		return nil
+	}
+
 	_, name := path.Split(s.file)
 	if stat, err := os.Stat(s.file); err != nil {
 		return fmt.Errorf("copyArchive: unable to stat backup file: %w", err)
@@ -538,6 +554,11 @@ func (s *script) copyArchive() error {
 // the given configuration. In case the given configuration would delete all
 // backups, it does nothing instead and logs a warning.
 func (s *script) pruneBackups() error {
+	if !s.c.BackupEnabled {
+		s.logger.Infof("pruneBackups: skipping, backup disabled by config.")
+		return nil
+	}
+
 	if s.c.BackupRetentionDays < 0 {
 		return nil
 	}
