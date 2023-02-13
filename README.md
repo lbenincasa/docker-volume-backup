@@ -1,3 +1,8 @@
+---
+## Beni:
+- Aggiunto argomento di configurazione `BackupEnabled` per disabilitare il backup. Es. nel caso in cui uno voglia utilizzare solo 'restic'
+---
+
 <a href="https://www.offen.dev/">
     <img src="https://offen.github.io/press-kit/offen-material/gfx-GitHub-Offen-logo.svg" alt="Offen logo" title="Offen" width="150px"/>
 </a>
